@@ -315,6 +315,10 @@ if (T3K_IOS)
     endif()
 endif()
 
+if(NOT MSVC)
+    set_source_files_properties(src/Tone3000StageSession.cpp PROPERTIES COMPILE_OPTIONS "-fno-fast-math")
+endif()
+
 target_sources(${PROJECT_NAME}
     PRIVATE
         include/BlockEq.h
@@ -338,6 +342,10 @@ target_sources(${PROJECT_NAME}
         src/PresetManager.cpp
         include/Processor.h
         src/Processor.cpp
+        src/Tone3000StageSession.cpp
+        include/Tone3000StageSession.h
+        include/Tone3000StageMeter.hpp
+        include/Tone3000StageBridge.hpp
         include/MidiMapper.h
         src/MidiMapper.cpp
         src/ProcessorChain.cpp
