@@ -139,6 +139,8 @@ public:
   void setSlimmableSize(double val);
 
   double getSlimmableSize() const noexcept { return requestedSlimmableSize; }
+  bool stageSupportsSlim() const;
+  std::vector<double> stageSlimBreakpoints() const;
 
 private:
   /** Instance 0: the reference for metadata queries (all instances share

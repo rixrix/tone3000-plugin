@@ -17,6 +17,8 @@
 #include "NAM/util.h"
 #include "NAM/wavenet/model.h"
 #include "ChainBlock.h"
+#include "Tone3000StageBridge.hpp"
+class Tone3000StageSession;
 #include "ChainDomain.h"
 #include "ChainHistory.h"
 #include "AutoOffset.h"
@@ -32,12 +34,15 @@
 
 class TONE3000Processor;
 
-class TONE3000Processor : public juce::AudioProcessor,
+class TONE3000Processor : public juce::AudioProcessor, public Tone3000StageProcessor,
                           private juce::AudioProcessorValueTreeState::Listener,
                           private juce::AsyncUpdater {
 public:
   TONE3000Processor();
   ~TONE3000Processor() override;
+  int32_t submitStageRequest(uint64_t,uint32_t,const char*,uint32_t) override;
+  int32_t readStageResult(uint64_t,char*,uint32_t) override;
+  juce::var getStageRuntime();
 
   void prepareToPlay(double sampleRate, int samplesPerBlock) override;
   void releaseResources() override;
@@ -951,6 +956,8 @@ private:
   // post-chain image matrix, pre-pan), smoothed so knob moves glide instead
   // of stepping once per block. Audio thread only.
   juce::SmoothedValue<float> outputGainSmoother;
+
+  std::shared_ptr<Tone3000StageSession> stageSession;
 
   // Monotonic revision of everything getChainState() reports. Bumped on every
   // chain mutation (structure, params, load completion, stereo/side changes)

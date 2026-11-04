@@ -1,4 +1,5 @@
 #include "Processor.h"
+#include "Tone3000StageSession.h"
 #if !HEADLESS
 #include "NativeEditor.h"
 #endif
@@ -35,6 +36,7 @@ TONE3000Processor::TONE3000Processor()
       // waiter (releaseChainEditFadeWhenLoadsSettle) never serializes the
       // very loads it is waiting on.
       loadingThreadPool(3) {
+  stageSession = std::make_shared<Tone3000StageSession>(*this);
   // Attach the file logger first thing: state restore (and the background
   // model loads it queues) runs before prepareToPlay, and its diagnostics
   // used to vanish because the logger didn't exist yet.
@@ -508,6 +510,8 @@ int TONE3000Processor::namEngineVoiceCount(const std::string& blockId) const {
 }
 
 TONE3000Processor::~TONE3000Processor() {
+  stageSession->shutdown();
+  stageSession.reset();
   parameters.removeParameterListener("osEnabled", this);
   parameters.removeParameterListener("osFactor", this);
   for (const auto& paramId : presetParameterIds())
@@ -2064,6 +2068,7 @@ void TONE3000Processor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mid
     outputMeterLevelL.store(peakToDb(peakL));
     outputMeterLevelR.store(peakToDb(peakR));
   }
+  stageSession->measure(buffer);
 }
 
 // ##################

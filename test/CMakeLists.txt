@@ -15,6 +15,10 @@ enable_language(C)
 
 juce_add_console_app(DspTests PRODUCT_NAME "DspTests")
 
+if(NOT MSVC)
+    set_source_files_properties(../plugin/src/Tone3000StageSession.cpp PROPERTIES COMPILE_OPTIONS "-fno-fast-math")
+endif()
+
 target_sources(DspTests PRIVATE
     src/auto_offset_tests.cpp
     src/branch_tests.cpp
@@ -56,6 +60,7 @@ target_sources(DspTests PRIVATE
     ../plugin/src/PresetFile.cpp
     ../plugin/src/PresetManager.cpp
     ../plugin/src/Processor.cpp
+    ../plugin/src/Tone3000StageSession.cpp
     ../plugin/src/ProcessorChain.cpp
     ../plugin/src/ProcessorHistory.cpp
     ../plugin/src/ProcessorModelLoader.cpp
